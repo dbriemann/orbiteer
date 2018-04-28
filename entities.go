@@ -1,25 +1,31 @@
 package main
 
-import "github.com/gen2brain/raylib-go/raylib"
+import (
+	"math"
+
+	"github.com/gen2brain/raylib-go/raylib"
+)
 
 type planet struct {
 	orb
 	*player
 
-	arbiters []*planet
-	size     float32
+	satellites []*planet
+	shipCount  float32
+	size       float32
 }
 
-func newPlanet(dist, size float32, vel raylib.Vector2, anchor *raylib.Vector2, player *player) *planet {
+func newPlanet(dist, size, dir float32, vel raylib.Vector2, anchor *raylib.Vector2, player *player) *planet {
 	p := planet{
 		orb: orb{
 			dist:   dist,
 			anchor: anchor,
 			vel:    vel,
+			dir:    dir,
 		},
-		player:   player,
-		size:     size,
-		arbiters: []*planet{},
+		player:     player,
+		size:       size,
+		satellites: []*planet{},
 	}
 
 	if anchor != nil {
@@ -32,15 +38,26 @@ func newPlanet(dist, size float32, vel raylib.Vector2, anchor *raylib.Vector2, p
 }
 
 func (p *planet) update(dt float32) {
+	// Rotate the planet and adjust the position of its satellites.
 	dx, dy := p.rotate(dt)
-	for i := 0; i < len(p.arbiters); i++ {
-		p.arbiters[i].pos.X += dx
-		p.arbiters[i].pos.Y += dy
+	for i := 0; i < len(p.satellites); i++ {
+		p.satellites[i].pos.X += dx
+		p.satellites[i].pos.Y += dy
 	}
+	// Ship production depends on planet size: production = sqrt(radius)/5
+	prod := math.Sqrt(float64(p.size)) / 5
+	p.shipCount += float32(prod) * dt
 }
 
 func (p *planet) draw() {
+	// Draw a black "background circle" to imitate a shadow.
+	raylib.DrawCircleV(p.pos, p.size+2, raylib.Black)
+	// And of course draw the planet itself.
 	raylib.DrawCircleV(p.pos, p.size, p.color)
+	// And all of its satellites are connected via a line
+	for _, a := range p.satellites {
+		raylib.DrawLineV(p.pos, a.pos, a.color)
+	}
 }
 
 type ship struct {

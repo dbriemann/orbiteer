@@ -29,6 +29,9 @@ func initPlayers(playerName string, ais int) {
 func initScreen(title string, width, height, fps int32) {
 	raylib.InitWindow(width, height, title)
 	raylib.SetTargetFPS(fps)
+	// We set the screen to be centered at 0,0. This means that our screen dimensions are:
+	// xrange: -screenWidth/2 to screenWidth/2
+	// yrange: -screenHeight/2 to screenHeight/2
 	camera = raylib.Camera2D{
 		Target:   raylib.Vector2{X: 0, Y: 0},
 		Offset:   raylib.Vector2{X: float32(screenWidth) / 2, Y: float32(screenHeight) / 2},
@@ -37,33 +40,50 @@ func initScreen(title string, width, height, fps int32) {
 	}
 }
 
-func initSolarSystem(planetAmount, maxArbiters, minDist, maxDist int) {
+// genPlanetParameters generates random numbers for all parameters of a planet
+// the valid values / ranges are passed in as arrays.
+func genPlanetParameters(sizes []float32) (size, vel, dir float32) {
+	size = sizes[rand.Intn(len(sizes))]
+	vel = (rand.Float32() * 7) + 3
+	// dir is just 1 or -1, which determines if a planet moves
+	// clockwise or counter-clockwise.
+	dir = float32(rand.Intn(2)*2 - 1)
+	return
+}
+
+func initSolarSystem(planetAmount, maxSatellites, minDist, maxDist int) {
+	// We distribute the planets homogeneously on the X axis starting inside of the given range (span).
 	span := maxDist - minDist
 	step := span / planetAmount
 	current := minDist
 
 	for i := 0; i < planetAmount; i++ {
-		p := newPlanet(float32(current), 8, raylib.Vector2{X: 10, Y: 10}, origin, &players[0])
+		size, vel, dir := genPlanetParameters(planetSizes)
+		p := newPlanet(float32(current), size, dir, raylib.Vector2{X: vel, Y: vel}, origin, &players[0])
 		// Add a little random adjustment to the planet's position to make
 		// it look less static.
-		p.pos.X += float32(rand.Intn(step/10)*2 - step/10)
-		// Random rotation to nicely distribute planets on screen.
-		//		rotatePoint(&p.pos, p.anchor, rand.Float32()*math.Pi*2)
+		shift := float32(rand.Intn(step/3)*2 - step/3)
+		p.pos.X += shift
+		// The planet is generated. Add it to our global planets slice.
 		planets = append(planets, p)
 
-		// Add arbiters
-		arbs := rand.Intn(maxArbiters + 1)
+		// Now we do more or less the same again as above. Just this time we are adding satellites
+		// which orbit the previously generated planet.
+		sats := rand.Intn(maxSatellites + 1)
 
-		for a := 0; a < arbs; a++ {
-			size := rand.Float32()*2 + 3
-			arb := newPlanet(float32((a+1)*20), size, raylib.Vector2{X: 10, Y: 10}, &p.pos, &players[0])
-			arb.rotate(rand.Float32() * arb.dist)
-			p.arbiters = append(p.arbiters, arb)
-			planets = append(planets, arb)
+		for s := 0; s < sats; s++ {
+			size, vel, dir := genPlanetParameters(satelliteSizess)
+			sat := newPlanet(float32((s+1)*20), size, dir, raylib.Vector2{X: vel, Y: vel}, &p.pos, &players[0])
+			sat.rotate(rand.Float32() * sat.dist)
+			p.satellites = append(p.satellites, sat)
+			planets = append(planets, sat)
 		}
 
+		// Now that the planet and its satellites exist we rotate them randomly
+		// to achieve a nice distribution "on the clock".
 		p.update(rand.Float32() * p.dist)
 
+		// Next planet please..
 		current += step
 	}
 }
@@ -71,7 +91,6 @@ func initSolarSystem(planetAmount, maxArbiters, minDist, maxDist int) {
 // update handles all logic changes in the game. This includes
 // moving objects or handling input.
 func update(dt float32) {
-	// Keep in mind never to use range loops if you want to alter the objects.
 	for i := 0; i < len(planets); i++ {
 		planets[i].update(dt)
 	}
@@ -105,7 +124,7 @@ func main() {
 	rand.Seed(time.Now().UnixNano())
 	initScreen(title, screenWidth, screenHeight, fps)
 	initPlayers("RagingDave", 0)
-	initSolarSystem(5, 3, 100, int(screenHeight/2))
+	initSolarSystem(12, 3, 100, int(screenHeight/2))
 
 	// The main game loop is here. It periodically calls the update and draw functions.
 	for !raylib.WindowShouldClose() {
