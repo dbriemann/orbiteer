@@ -8,6 +8,8 @@ var (
 	fps          int32 = 0
 	title              = "Orbiteer"
 
+	productionFactor = 0.1
+
 	planets []*planet
 	players []player
 	camera  raylib.Camera2D
@@ -16,4 +18,5 @@ var (
 	origin          = &raylib.Vector2{X: 1, Y: 1}
 	planetSizes     = []float32{7, 8, 9}
 	satelliteSizess = []float32{3, 4, 5}
+	recycledShips   = []*ship{}
 )

@@ -51,8 +51,8 @@ func genPlanetParameters(sizes []float32) (size, vel, dir float32) {
 	return
 }
 
+// We distribute the planets homogeneously on the X axis starting inside of the given range (span).
 func initSolarSystem(planetAmount, maxSatellites, minDist, maxDist int) {
-	// We distribute the planets homogeneously on the X axis starting inside of the given range (span).
 	span := maxDist - minDist
 	step := span / planetAmount
 	current := minDist
@@ -81,7 +81,7 @@ func initSolarSystem(planetAmount, maxSatellites, minDist, maxDist int) {
 
 		// Now that the planet and its satellites exist we rotate them randomly
 		// to achieve a nice distribution "on the clock".
-		p.update(rand.Float32() * p.dist)
+		p.rotateAll(rand.Float32() * p.dist)
 
 		// Next planet please..
 		current += step
