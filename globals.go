@@ -23,4 +23,5 @@ var (
 
 	planetTextures = map[int]raylib.Texture2D{}
 	shipTexture    raylib.Texture2D
+	sunTexture     raylib.Texture2D
 )

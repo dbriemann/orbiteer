@@ -100,15 +100,20 @@ func initTextures() {
 		planetTextures[size*2] = raylib.LoadTextureFromImage(pim)
 		raylib.UnloadImage(pim)
 	}
+
 	shipIm := raylib.GenImageGradientRadial(3, 3, 0.9, raylib.White, raylib.Blank)
 	shipTexture = raylib.LoadTextureFromImage(shipIm)
 	raylib.UnloadImage(shipIm)
+
+	sunIm := raylib.GenImageGradientRadial(75, 75, 0.1, raylib.White, raylib.Blank)
+	sunTexture = raylib.LoadTextureFromImage(sunIm)
+	raylib.UnloadImage(sunIm)
 }
 
 // update handles all logic changes in the game. This includes
 // moving objects or handling input.
 func update(dt float32) {
-	spriteCount = len(planets)
+	spriteCount = len(planets) + 1 // includes the sun
 	for i := 0; i < len(planets); i++ {
 		planets[i].update(dt)
 		for _, s := range planets[i].ships {
@@ -129,7 +134,7 @@ func draw() {
 	raylib.Begin2dMode(camera)
 
 	// Draw block that is applied to the camera view.
-	raylib.DrawCircle(0, 0, 15, raylib.Gold)
+	raylib.DrawTextureV(sunTexture, *origin, raylib.Gold)
 
 	for _, p := range planets {
 		p.draw()
