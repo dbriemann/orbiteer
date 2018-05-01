@@ -91,13 +91,13 @@ func initSolarSystem(planetAmount, maxSatellites, minDist, maxDist int) {
 func initTextures() {
 	// Generate textures for all planet/satellite sizes.
 	for _, size := range planetSizes {
-		pim := genPlanetImage(size*2, 0.7, raylib.White, raylib.Blank)
-		planetTextures[size*2] = raylib.LoadTextureFromImage(pim)
+		pim := genPlanetImage(size*2+1, 0.7, raylib.White, raylib.Blank)
+		planetTextures[size*2+1] = raylib.LoadTextureFromImage(pim)
 		raylib.UnloadImage(pim)
 	}
 	for _, size := range satelliteSizes {
-		pim := genPlanetImage(size*2, 0.7, raylib.White, raylib.Blank)
-		planetTextures[size*2] = raylib.LoadTextureFromImage(pim)
+		pim := genPlanetImage(size*2+1, 0.7, raylib.White, raylib.Blank)
+		planetTextures[size*2+1] = raylib.LoadTextureFromImage(pim)
 		raylib.UnloadImage(pim)
 	}
 
