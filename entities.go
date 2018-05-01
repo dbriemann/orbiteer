@@ -80,18 +80,12 @@ func (p *planet) update(dt float32) {
 }
 
 func (p *planet) draw() {
-	// Draw a black "background circle" to imitate a shadow.
-	raylib.DrawCircleV(p.pos, p.size+2, raylib.Black)
-	// And of course draw the planet itself.
-	raylib.DrawCircleV(p.pos, p.size, p.color)
-	// And all of its satellites are connected via a line
-	for _, s := range p.satellites {
-		raylib.DrawLineV(p.pos, s.pos, s.color)
-	}
+	upperLeft := raylib.Vector2{X: p.pos.X - p.size, Y: p.pos.Y - p.size}
+	raylib.DrawTextureV(planetTextures[int(p.size*2)], upperLeft, p.color)
 
 	// Draw all ships stationed at this planet.
 	for _, s := range p.ships {
-		raylib.DrawCircleV(s.pos, 1, s.color)
+		s.draw()
 	}
 }
 
@@ -111,6 +105,11 @@ func (p *planet) distributeShips() {
 type ship struct {
 	orb
 	*player
+}
+
+func (s *ship) draw() {
+	upperLeft := raylib.Vector2{X: s.pos.X - 1, Y: s.pos.Y - 1}
+	raylib.DrawTextureV(shipTexture, upperLeft, s.color)
 }
 
 func newShip(planet *planet, player *player) *ship {

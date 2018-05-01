@@ -42,8 +42,8 @@ func initScreen(title string, width, height, fps int32) {
 
 // genPlanetParameters generates random numbers for all parameters of a planet
 // the valid values / ranges are passed in as arrays.
-func genPlanetParameters(sizes []float32) (size, vel, dir float32) {
-	size = sizes[rand.Intn(len(sizes))]
+func genPlanetParameters(sizes []int) (size, vel, dir float32) {
+	size = float32(sizes[rand.Intn(len(sizes))])
 	vel = (rand.Float32() * 7) + 3
 	// dir is just 1 or -1, which determines if a planet moves
 	// clockwise or counter-clockwise.
@@ -72,7 +72,7 @@ func initSolarSystem(planetAmount, maxSatellites, minDist, maxDist int) {
 		sats := rand.Intn(maxSatellites + 1)
 
 		for s := 0; s < sats; s++ {
-			size, vel, dir := genPlanetParameters(satelliteSizess)
+			size, vel, dir := genPlanetParameters(satelliteSizes)
 			sat := newPlanet(float32((s+1)*20), size, dir, raylib.Vector2{X: vel, Y: vel}, &p.pos, &players[0])
 			sat.rotate(rand.Float32() * sat.dist)
 			p.satellites = append(p.satellites, sat)
@@ -88,11 +88,34 @@ func initSolarSystem(planetAmount, maxSatellites, minDist, maxDist int) {
 	}
 }
 
+func initTextures() {
+	// Generate textures for all planet/satellite sizes.
+	for _, size := range planetSizes {
+		pim := genPlanetImage(size*2, 0.7, raylib.White, raylib.Blank)
+		planetTextures[size*2] = raylib.LoadTextureFromImage(pim)
+		raylib.UnloadImage(pim)
+	}
+	for _, size := range satelliteSizes {
+		pim := genPlanetImage(size*2, 0.7, raylib.White, raylib.Blank)
+		planetTextures[size*2] = raylib.LoadTextureFromImage(pim)
+		raylib.UnloadImage(pim)
+	}
+	shipIm := raylib.GenImageGradientRadial(3, 3, 0.9, raylib.White, raylib.Blank)
+	shipTexture = raylib.LoadTextureFromImage(shipIm)
+	raylib.UnloadImage(shipIm)
+}
+
 // update handles all logic changes in the game. This includes
 // moving objects or handling input.
 func update(dt float32) {
+	spriteCount = len(planets)
 	for i := 0; i < len(planets); i++ {
 		planets[i].update(dt)
+		for _, s := range planets[i].ships {
+			if s != nil {
+				spriteCount++
+			}
+		}
 	}
 }
 
@@ -116,6 +139,7 @@ func draw() {
 
 	// Draw block applied outside of camera view (HUD elements etc.)
 	raylib.DrawText(fmt.Sprintf("FPS: %d", int(raylib.GetFPS())), 10, 10, 32, raylib.RayWhite)
+	raylib.DrawText(fmt.Sprintf("Sprites: %d", spriteCount), 10, 50, 32, raylib.RayWhite)
 
 	raylib.EndDrawing()
 }
@@ -125,6 +149,7 @@ func main() {
 	initScreen(title, screenWidth, screenHeight, fps)
 	initPlayers("RagingDave", 0)
 	initSolarSystem(12, 3, 100, int(screenHeight/2))
+	initTextures()
 
 	// The main game loop is here. It periodically calls the update and draw functions.
 	for !raylib.WindowShouldClose() {
