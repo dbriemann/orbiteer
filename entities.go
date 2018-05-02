@@ -80,7 +80,7 @@ func (p *planet) update(dt float32) {
 }
 
 func (p *planet) draw() {
-	upperLeft := raylib.Vector2{X: p.pos.X - p.size, Y: p.pos.Y - p.size}
+	upperLeft := raylib.Vector2{X: float32(math.Round(float64(p.pos.X - p.size))), Y: float32(math.Round(float64(p.pos.Y - p.size)))}
 	raylib.DrawTextureV(planetTextures[int(p.size*2)+1], upperLeft, p.color)
 
 	// Draw all ships stationed at this planet.

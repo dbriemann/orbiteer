@@ -114,6 +114,7 @@ func initTextures() {
 // moving objects or handling input.
 func update(dt float32) {
 	spriteCount = len(planets) + 1 // includes the sun
+
 	for i := 0; i < len(planets); i++ {
 		planets[i].update(dt)
 		for _, s := range planets[i].ships {
@@ -134,7 +135,8 @@ func draw() {
 	raylib.Begin2dMode(camera)
 
 	// Draw block that is applied to the camera view.
-	raylib.DrawTextureV(sunTexture, *origin, raylib.Gold)
+	upperLeft := raylib.Vector2{X: origin.X - float32(sunTexture.Width/2), Y: origin.Y - float32(sunTexture.Height/2)}
+	raylib.DrawTextureV(sunTexture, upperLeft, raylib.Gold)
 
 	for _, p := range planets {
 		p.draw()
