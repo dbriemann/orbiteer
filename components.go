@@ -1,8 +1,6 @@
 package main
 
 import (
-	"math"
-
 	"github.com/gen2brain/raylib-go/raylib"
 	"github.com/gen2brain/raylib-go/raymath"
 )
@@ -27,10 +25,11 @@ func (o *orb) rotate(dt float32) (float32, float32) {
 		return 0, 0 // no rotation without anchor
 	}
 
-	len := float32(math.Sqrt(float64(raymath.Vector2LenSqr(o.vel))))
+	len := raymath.Vector2Length(o.vel)
 	omega := o.dir * len * dt / o.dist
-	nx := o.anchor.X + (o.pos.X-o.anchor.X)*float32(math.Cos(float64(omega))) - (o.pos.Y-o.anchor.Y)*float32(math.Sin(float64(omega)))
-	ny := o.anchor.Y + (o.pos.X-o.anchor.X)*float32(math.Sin(float64(omega))) + (o.pos.Y-o.anchor.Y)*float32(math.Cos(float64(omega)))
+	sn, cs := sincos(omega)
+	nx := o.anchor.X + (o.pos.X-o.anchor.X)*cs - (o.pos.Y-o.anchor.Y)*sn
+	ny := o.anchor.Y + (o.pos.X-o.anchor.X)*sn + (o.pos.Y-o.anchor.Y)*cs
 
 	dx := nx - o.pos.X
 	dy := ny - o.pos.Y

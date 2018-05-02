@@ -56,11 +56,11 @@ func (p *planet) rotateAll(dt float32) {
 func (p *planet) update(dt float32) {
 	p.rotateAll(dt)
 	// Ship production depends on planet size: production = sqrt(radius)/5
-	prod := math.Sqrt(float64(p.size)) * productionFactor
-	p.shipsProduced += float32(prod) * dt
+	prod := sqrt(p.size) * productionFactor
+	p.shipsProduced += prod * dt
 
 	// Add new ships to slice.
-	for i := 0; i < int(math.Floor(float64(p.shipsProduced))); i++ {
+	for i := 0; i < int(p.shipsProduced); i++ {
 		added := false
 		// Search a free spot and if there is none append.
 		nship := newShip(p, p.player)
@@ -80,8 +80,8 @@ func (p *planet) update(dt float32) {
 }
 
 func (p *planet) draw() {
-	upperLeft := raylib.Vector2{X: float32(math.Round(float64(p.pos.X - p.size))), Y: float32(math.Round(float64(p.pos.Y - p.size)))}
-	raylib.DrawTextureV(planetTextures[int(p.size*2)+1], upperLeft, p.color)
+	upperLeft := raylib.Vector2{X: round(p.pos.X - p.size), Y: round(p.pos.Y - p.size)}
+	DrawTextureV(planetTextures[int(p.size*2)+1], upperLeft, p.color)
 
 	// Draw all ships stationed at this planet.
 	for _, s := range p.ships {
@@ -109,7 +109,7 @@ type ship struct {
 
 func (s *ship) draw() {
 	upperLeft := raylib.Vector2{X: s.pos.X - 1, Y: s.pos.Y - 1}
-	raylib.DrawTextureV(shipTexture, upperLeft, s.color)
+	DrawTextureV(shipTexture, upperLeft, s.color)
 }
 
 func newShip(planet *planet, player *player) *ship {
