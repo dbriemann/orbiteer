@@ -81,7 +81,7 @@ func (p *planet) update(dt float32) {
 
 func (p *planet) draw() {
 	upperLeft := raylib.Vector2{X: round(p.pos.X - p.size), Y: round(p.pos.Y - p.size)}
-	DrawTextureV(planetTextures[int(p.size*2)+1], upperLeft, p.color)
+	drawTextureV(planetTextures[int(p.size*2)+1], upperLeft, p.color)
 
 	// Draw all ships stationed at this planet.
 	for _, s := range p.ships {
@@ -109,7 +109,7 @@ type ship struct {
 
 func (s *ship) draw() {
 	upperLeft := raylib.Vector2{X: s.pos.X - 1, Y: s.pos.Y - 1}
-	DrawTextureV(shipTexture, upperLeft, s.color)
+	drawTextureV(shipTexture, upperLeft, s.color)
 }
 
 func newShip(planet *planet, player *player) *ship {
