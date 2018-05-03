@@ -9,7 +9,7 @@ var (
 	title              = "Orbiteer"
 	spriteCount        = 0
 
-	productionFactor = 0.1
+	productionFactor float32 = 0.1
 
 	planets []*planet
 	players []player

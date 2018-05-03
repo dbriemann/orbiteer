@@ -136,7 +136,7 @@ func draw() {
 
 	// Draw block that is applied to the camera view.
 	upperLeft := raylib.Vector2{X: origin.X - float32(sunTexture.Width/2), Y: origin.Y - float32(sunTexture.Height/2)}
-	raylib.DrawTextureV(sunTexture, upperLeft, raylib.Gold)
+	drawTextureV(sunTexture, upperLeft, raylib.Gold)
 
 	for _, p := range planets {
 		p.draw()
